@@ -13,6 +13,8 @@ typedef enum{
     FILENOTFOUND,
     DUPLICATE,
     EMPTY,
+    NOT_EXISTS,
+    EXISTS
 
 } Status;
 

@@ -1,4 +1,4 @@
-Write the makefile.
+Write the        makefile.
 Write the header file
 Run the makefile
 See the output

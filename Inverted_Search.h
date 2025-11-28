@@ -29,7 +29,9 @@ Status Add_To_List( LIST **head, char *filename, FILE *fptr );
 
 Status Save_DataBase( HASH_T* H_Table );
 
-Status  Update_DataBase( HASH_T* H_Table );
+Status  Update_DataBase( HASH_T* H_Table, LIST **head );
+
+Status File_Already_Indexed (const char *fname, HASH_T *Hash_T );
 
 
 #endif

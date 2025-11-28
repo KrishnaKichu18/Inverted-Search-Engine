@@ -4,28 +4,45 @@
  * Developer   : Krishna M
  * Date        : 13/11/2025
  *
- * Summary     :
- *      Handles all user-facing output for the Inverted Search project. This includes:
- *          • Rendering the full database in a clean tabular format
- *          • Searching for a single word and showing all file occurrences
- *          • Printing the interactive menu used by the main driver
+ * Description :
+ *      Provides display, search, and menu rendering functionalities for the
+ *      Inverted Search Engine. Visually presents hash table contents and
+ *      allows interactive querying of indexed words.
  *
- * Function Overview:
- *      → Display_DataBase()
- *              Prints all 27 hash buckets in a condensed table layout.
- *              Words appear once, followed by aligned file/occurrence rows.
+ * Function Overview :
  *
- *      → Search_DataBase()
- *              Looks up a word by its hash index and prints every file in which it occurs.
- *              Also reports total file count and occurrence count per file.
+ *      → Display_DataBase( HASH_T* H_Table )
+ *            • Iterates through all 27 hash buckets (0–26)
+ *            • Prints each unique word with its file occurrences in a tabular format
+ *            • Prevents misleading output by showing a clear message when database is empty
+ *
+ *      → Search_DataBase( HASH_T* H_Table, char* word )
+ *            • Determines hash index from the first character of input word
+ *            • Searches MAIN_NODE chain for an exact string match
+ *            • Prints all file names and occurrence counts when found
+ *            • Returns SUCCESS if word exists, otherwise FAILURE
  *
  *      → Display_Menu()
- *              Shows the main program options with neat formatting.
+ *            • Prints main program options with clear and interactive UI cues
  *
- * Notes:
- *      • Optimized for readability; avoids repetitive word/index printing.
- *      • Works directly on the in-memory hash table created or loaded earlier.
- *      • All emoji and formatting are intentional, not bugs.
+ * Input Details :
+ *      • Display_DataBase      → Requires initialized hash table (may contain or lack data)
+ *      • Search_DataBase       → Requires a valid null-terminated word string
+ *
+ * Return Values :
+ *      Display_DataBase        → Prints table, returns DISPLAY (non-functional return type)
+ *      Search_DataBase         → SUCCESS / FAILURE based on search outcome
+ *
+ * Features :
+ *      • Aligned table layout for improved readability
+ *      • Avoids repeated printing for multi-file word entries
+ *      • Highlights total file count dynamically in search results
+ *
+ * Special Considerations :
+ *      • Search is case-sensitive and matches stored word format exactly
+ *      • Output appearance assumes reasonable filename/word lengths
+ *      • Function does not modify or free any data structures
+ *
  *******************************************************************************************************************************************************************/
 
 

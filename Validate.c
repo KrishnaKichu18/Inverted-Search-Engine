@@ -1,34 +1,37 @@
 /*******************************************************************************************************************************************************************
  * Function Name    : Read_and_Validate
  *
- * Description      : Validates all command-line input files before they are added to the active file list.
- *                    Each file passes through four layers of validation:
+ * Description      :
+ *      Validates all command-line input files before adding them to the active file list.
+ *      Each file must pass the following checks in order:
  *
- *                        1. Check_Ext()      → Ensures file extension is ".txt"
- *                        2. Check_Avail()    → Ensures the file exists and is readable
- *                        3. Check_Content()  → Ensures the file is not empty
- *                        4. No_Duplicate()   → Ensures the same file is not added twice
+ *          1. Check_Ext()      → Validates that the file has a ".txt" extension (case-sensitive)
+ *          2. Check_Avail()    → Ensures the file exists and is readable
+ *          3. Check_Content()  → Confirms the file is not empty
+ *          4. No_Duplicate()   → Prevents adding a file already present in the list
  *
- *                    After successful validation, the file and its pointer are added to the LIST using Add_To_List().
+ *      If a file clears all checks, it is appended to the LIST using Add_To_List(),
+ *      and its file pointer remains open for later database creation.
  *
  * Prototype        : Status Read_and_Validate( int argc, char *argv[], LIST **head );
  *
  * Input Parameters : argc → Number of command-line arguments.
- *                    argv → Array of argument strings (filenames start from index 1).
- *                    head → Pointer to the head pointer of the linked list storing all validated files.
+ *                    argv → List of argument strings (filenames begin from index 1).
+ *                    head → Pointer to the head pointer of the file-list structure.
  *
- * Return Value     : SUCCESS → After validating all files (even if some are rejected).
- *                    FAILURE → Only if argument count is insufficient (program exits immediately).
+ * Return Value     : SUCCESS → Returned after validating all files (valid or invalid).
+ *                    FAILURE → Never returned for file validation errors; only insufficient
+ *                              arguments trigger program exit.
  *
  * Features         :
- *                    • Performs all file checks in a structured and modular manner.
- *                    • Adds only clean, valid, non-empty, non-duplicate files to the active list.
- *                    • Prints detailed feedback for each file (extension error, duplicate, empty, etc.).
- *                    • Ensures fptr remains open so database creation can consume it later.
+ *                    • Performs modular validation for each file.
+ *                    • Adds only valid, non-duplicate, non-empty files to the active list.
+ *                    • Prints descriptive messages for each validation outcome.
+ *                    • Automatically closes file pointers for invalid files, preventing leaks.
  *
  * Special Cases    :
- *                    • If no files are provided → Program exits immediately.
- *                    • If all files fail validation → head remains NULL, but function still returns SUCCESS.
+ *                    • If fewer than 2 arguments → Program prints error and exits immediately.
+ *                    • If all files fail validation → *head remains NULL*, but SUCCESS still returned.
  *
  *******************************************************************************************************************************************************************/
 
@@ -68,16 +71,21 @@ Status Read_and_Validate( int argc, char* argv[], LIST **head )
                         else
                         {
                             printf("[INFO]: %s failed to be listed\n", argv[i] );
+                            fclose( fptr );
+
                         }
                     }
                     else
                     {
-                        printf("[INFO]: %s is Duplicate file\n", argv[i] ); 
+                        printf("[INFO]: %s is Duplicate file\n", argv[i] );
+                        fclose( fptr );
                     }
                 }
                 else
                 {
                     printf("[INFO]: %s is Empty file\n", argv[i] );
+                    fclose( fptr );
+
                 }
             }
             else

@@ -1,11 +1,16 @@
-#5; file; 1; README.txt; 1; #
-#7; header; 1; README.txt; 1; #
-#12; makefile.; 2; README.txt; 1; Hi.txt; 1; #
-#12; makefile; 2; README.txt; 1; Hi.txt; 1; #
-#14; output; 1; README.txt; 1; #
-#17; Run; 2; README.txt; 1; Hi.txt; 1; #
-#18; See; 1; README.txt; 1; #
-#19; the; 2; README.txt; 4; Hi.txt; 2; #
-#22; Write; 2; README.txt; 2; Hi.txt; 1; #
-#26; 5; 1; README.txt; 1; #
-#26; #56446; 1; README.txt; 1; #
+#5; file; 1; f1.txt; 1; #
+#7; header; 1; f1.txt; 1; #
+#8; is; 1; f1.txt; 1; #
+#10; Krishna; 1; f1.txt; 1; #
+#10; Kichu; 1; f1.txt; 2; #
+#12; makefile.; 1; f1.txt; 1; #
+#12; makefile; 1; f1.txt; 1; #
+#14; output; 1; f1.txt; 1; #
+#17; Run; 1; f1.txt; 1; #
+#18; See; 1; f1.txt; 1; #
+#19; the; 1; f1.txt; 4; #
+#21; Virat; 1; f1.txt; 1; #
+#22; Write; 1; f1.txt; 2; #
+#26; 5; 1; f1.txt; 1; #
+#26; #56446; 1; f1.txt; 1; #
+#26; 18; 1; f1.txt; 1; #

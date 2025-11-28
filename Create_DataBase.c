@@ -1,30 +1,64 @@
 /*******************************************************************************************************************************************************************
- * File        : Display_and_Search.c
+ * File        : Create_and_Insert.c
  * Project     : Inverted Search Engine (Project-2)
  * Developer   : Krishna M
  * Date        : 13/11/2025
  *
- * Summary     :
- *      Handles all user-visible output and lookup operations for the inverted index.
- *      This module prints the database in a compact tabular layout and performs fast,
- *      index-based word searches using the pre-built hash table.
+ * Description :
+ *      Core logic for building and maintaining the inverted index. This module:
+ *        • Creates hash table and initializes all bucket heads
+ *        • Reads tokens from validated files and inserts them into the index
+ *        • Creates and links MAIN_NODE and SUB_NODE dynamically as needed
+ *        • Prevents duplicate file-indexing to avoid double counting
  *
- * Function Overview:
- *      → Display_DataBase()
- *            Prints all words and their file-occurrence details in a clean table.
- *            Blank cells are used for continued SUB_NODE entries to keep rows aligned.
+ * Function Overview :
  *
- *      → Search_DataBase()
- *            Looks up a word using its bucket index, scans the MAIN_NODE chain,
- *            and prints occurrence counts and file details if found.
+ *      → Create_DataBase( HASH_T *Hash_T, LIST **head )
+ *            • Scans each validated file from the file list
+ *            • Tokenizes every word and inserts into hash table using hashing
+ *            • Skips files that are already indexed earlier
  *
- *      → Display_Menu()
- *            Shows the main interactive menu for the entire project.
+ *      → Initialise_Hash_Table( HASH_T *Hash_T )
+ *            • Sets index value and resets link pointer for all 27 buckets
  *
- * Notes:
- *      • Display and search use only the hash table; no file I/O here.
- *      • Designed for readability — compact rows, clean continuation lines.
- *      • Safe against empty buckets and empty database conditions.
+ *      → Find_Index( char chr )
+ *            • Maps first character of word into bucket index
+ *            • 'a'–'z' → 0–25
+ *            • Others → 26
+ *
+ *      → Create_Main_Node( char* word, char* filename )
+ *            • Allocates + initializes a new MAIN_NODE
+ *            • Automatically creates its first SUB_NODE entry
+ *
+ *      → Create_Sub_Node( char* filename )
+ *            • Allocates + initializes a new SUB_NODE entry for filename
+ *
+ *      → Insert_To_Hash_Table( int index, char* word, char* filename, HASH_T *Hash_T )
+ *            • Handles all insertion cases:
+ *                 1. Brand-new word → new MAIN_NODE
+ *                 2. Word exists in DB → update existing structure
+ *                 3. File has word already → just increment count
+ *                 4. File is new for this word → attach new SUB_NODE
+ *
+ *      → File_Already_Indexed( const char *fname, HASH_T *Hash_T )
+ *            • Prevents duplicate re-indexing of already processed files
+ *
+ * Data Structure :
+ *      HASH_T
+ *         ↳ MAIN_NODE (unique words)
+ *               ↳ SUB_NODE (filename, count)
+ *
+ * Return Behavior :
+ *      • All creation/insert functions → SUCCESS on proper insertion
+ *      • Memory allocation failures → FAILURE
+ *      • Duplicate indexing detection → EXISTS / NOT_EXISTS
+ *
+ * Notes :
+ *      • fscanf() tokenization uses whitespace as separator by default
+ *      • Word matching is case-sensitive (storage-exact)
+ *      • fptr must already be open when passed to Create_DataBase()
+ *      • Hash insertion always maintains forward traversal order
+ *
  *******************************************************************************************************************************************************************/
 
 
@@ -46,6 +80,18 @@ Status Create_DataBase( HASH_T *Hash_T, LIST **head )
 
 	while( Ltemp != NULL )
 	{
+
+		// After update, check if any file is already indexed to ensure no duplicate it found
+		if ( File_Already_Indexed( Ltemp -> FILENAME, Hash_T ) == EXISTS )
+        {
+            printf("[INFO]: '%s' already present in database. Skipping...\n",
+                   Ltemp -> FILENAME );
+
+            Ltemp = Ltemp -> link;
+            continue;
+        }
+
+
 		char str[MAX_WORD_LENGTH];
 
 		while( fscanf( Ltemp -> fptr, "%s", str ) != EOF )
@@ -197,4 +243,30 @@ Status Insert_To_Hash_Table( int index, char* word, char* filename, HASH_T *Hash
 
 	return SUCCESS;
 	
+}
+
+
+/**/
+Status File_Already_Indexed (const char *fname, HASH_T *Hash_T )
+{
+    for ( int i = 0; i < 27; i++ )
+    {
+        MAIN_NODE *main = Hash_T[i].link;
+
+        while ( main )
+        {
+            SUB_NODE *sub = main -> Next_Sub_node;
+
+            while ( sub )
+            {
+                if (strcmp(sub -> File_name, fname ) == 0 )
+                    return EXISTS;  // Exists in DB
+
+                sub = sub -> link;
+            }
+            
+			main = main -> Next_Main_node;
+        }
+    }
+    return NOT_EXISTS;  // Not found
 }
